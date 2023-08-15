@@ -1,0 +1,4 @@
+# -*- coding: utf-8 -*-
+
+# Discard Python cache files
+**/__pycache__
