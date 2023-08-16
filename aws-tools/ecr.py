@@ -26,24 +26,16 @@ def mod_policy_statement_arns(policy: dict, statement_sid: str, arns: list[str],
   """
   This is a very specific use case where the ECR policy uses a `StringLike` condition to allow access to a specific set of ARNs
   """
-  statement_body = None
   statement_idx = None
 
   for s in range(len(policy['Statement'])):
     if policy['Statement'][s]["Sid"] == statement_sid:
-      statement_body = policy['Statement'][s]
       statement_idx = s
 
-  if statement_idx is None:
-    return None
-
   if replace:
-    statement_body['Condition']['StringLike']['aws:PrincipalArn'] = arns
+    policy['Statement'][statement_idx]['Condition']['StringLike']['aws:PrincipalArn'] = arns
   else:
-    allowed_arns = statement_body['Condition']['StringLike']['aws:PrincipalArn']
-    statement_body['Condition']['StringLike']['aws:PrincipalArn'] = allowed_arns + arns
-
-  del policy['Statement'][statement_idx]
-  policy['Statement'].append(statement_body)
+    allowed_arns = policy['Statement'][statement_idx]['Condition']['StringLike']['aws:PrincipalArn']
+    policy['Statement'][statement_idx]['Condition']['StringLike']['aws:PrincipalArn'] = allowed_arns + arns
 
   return policy
