@@ -22,7 +22,7 @@ def set_ecr_repo_policy(repo_name:str, policy:str)->None:
       return False
     return True
 
-def mod_policy_statement_arns(policy: dict, statement_sid: str, arns: list[str])->dict:
+def mod_policy_statement_arns(policy: dict, statement_sid: str, arns: list[str], replace: bool = False)->dict:
   """
   This is a very specific use case where the ECR policy uses a `StringLike` condition to allow access to a specific set of ARNs
   """
@@ -37,12 +37,13 @@ def mod_policy_statement_arns(policy: dict, statement_sid: str, arns: list[str])
   if statement_idx is None:
     return None
 
-  allowed_arns = statement_body['Condition']['StringLike']['aws:PrincipalArn']
-
-  modded_statement = statement_body
-  modded_statement['Condition']['StringLike']['aws:PrincipalArn'] = allowed_arns + arns
+  if replace:
+    statement_body['Condition']['StringLike']['aws:PrincipalArn'] = arns
+  else:
+    allowed_arns = statement_body['Condition']['StringLike']['aws:PrincipalArn']
+    statement_body['Condition']['StringLike']['aws:PrincipalArn'] = allowed_arns + arns
 
   del policy['Statement'][statement_idx]
-  policy['Statement'].append(modded_statement)
+  policy['Statement'].append(statement_body)
 
   return policy
