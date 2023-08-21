@@ -30,6 +30,6 @@ if __name__ == "__main__":
   topics = sns.get_sns_topics(filter='.*autopilot-.*')
   for topic in topics:
     print(f"Topic: {topic}")
-    subscriptions = sns.get_sns_subscription_arns(topic)
+    subscriptions = sns.get_sns_topic_subscriptions(topic)
     for subscription in subscriptions:
-      print(f"  Subscription: {subscription[1]}")
+      print(f"  Subscription: {subscription[1]} -> {subscription[2]}")
