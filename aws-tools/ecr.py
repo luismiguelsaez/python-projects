@@ -29,6 +29,28 @@ def mod_lifecycle_policy(repo_name:str, policy:str)->bool:
       return False
     return True
 
+def get_repo_images(repo_name: str, sort: bool = True)->list[dict]:
+    images = ecr_client.describe_images(repositoryName=repo_name)
+    if sort:
+      return sorted(images['imageDetails'], key=lambda k: k['imagePushedAt'], reverse=False)
+    return images['imageDetails']
+
+def get_repo_image_tags(repo_name: str, filter: str = ".*")->dict[str, dict[str, list[str]]]:
+    images = ecr_client.describe_images(repositoryName=repo_name)
+    filtered_images = {}
+    for image in images['imageDetails']:
+      if 'imageTags' in image:
+        push_date = image['imagePushedAt'].strftime("%Y-%m-%d %H:%M:%S")
+        digest = image['imageDigest']
+        filtered_tags = [ t for t in image['imageTags'] if re.match('^[0-9]+$', t) ]
+        if len(filtered_tags) > 0:
+          filtered_images[digest] = {
+            'push_date': push_date,
+            'tags': filtered_tags
+          }
+
+    return filtered_images
+
 def mod_repo_policy_statement_arns(policy: dict, statement_sid: str, arns: list[str], replace: bool = False)->dict:
   """
   This is a very specific use case where the ECR policy uses a `StringLike` condition to allow access to a specific set of ARNs
