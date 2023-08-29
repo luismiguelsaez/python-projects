@@ -38,7 +38,7 @@ def get_repo_images(repo_name: str, sort: bool = True)->list[dict]:
 def get_repo_image_tags(repo_name: str, filter: str = ".*")->dict[str, dict[str, list[str]]]:
     images = ecr_client.describe_images(repositoryName=repo_name)
     filtered_images = {}
-    for image in images['imageDetails']:
+    for image in sorted(images['imageDetails'], key=lambda k: k['imagePushedAt'], reverse=False):
       if 'imageTags' in image:
         push_date = image['imagePushedAt'].strftime("%Y-%m-%d %H:%M:%S")
         digest = image['imageDigest']
