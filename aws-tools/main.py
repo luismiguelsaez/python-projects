@@ -5,7 +5,7 @@ import re
 if __name__ == "__main__":
 
   # Get ECR repository images
-  ecr.print_repo_images(repo_filter='lokalise-main/.*', tag_filter="^[0-9]+$")
+  ecr.print_repo_images(repo_filter='lokalise-main/(static|app|nginx-app)', tag_filter="^[0-9]+$")
 
   # Modify the ECR repository policy of all repos matching the filter
   #repos = ecr.get_repo_names(filter='okapi-wrapper/.*')

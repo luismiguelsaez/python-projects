@@ -42,10 +42,12 @@ def get_repo_image_tags(repo_name: str, filter: str = ".*")->dict[str, dict[str,
       if 'imageTags' in image:
         push_date = image['imagePushedAt'].strftime("%Y-%m-%d %H:%M:%S")
         digest = image['imageDigest']
+        size = image['imageSizeInBytes']
         filtered_tags = [ t for t in image['imageTags'] if re.match('^[0-9]+$', t) ]
         if len(filtered_tags) > 0:
           filtered_images[digest] = {
             'push_date': push_date,
+            'size': size,
             'tags': filtered_tags
           }
 
@@ -58,7 +60,7 @@ def print_repo_images(repo_filter: str = '.*', tag_filter: str = ".*")->None:
     if len(images) > 0:
       print(f"Repo: {repo}")
       for image in images:
-        print(f"  - {image} ({images[image]['push_date']}) -> {images[image]['tags']}")
+        print(f"  - ({images[image]['push_date']}) ({images[image]['size']}) {image} -> {images[image]['tags']}")
 
 def mod_repo_policy_statement_arns(policy: dict, statement_sid: str, arns: list[str], replace: bool = False)->dict:
   """
