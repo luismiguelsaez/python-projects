@@ -62,7 +62,7 @@ def print_repo_images(repo_filter: str = '.*', tag_filter: str = ".*")->None:
       for image in images:
         print("[{}] {:10.0f} {} {}".format(images[image]['push_date'], images[image]['size'], image, ",".join(images[image]['tags'])))
 
-def batch_mod_repo_policy_statement_arns(repo_filter: str, arns: list[str], statement_sid: str = 'AllowCrossAccountRO', replace: bool = False, dry_run: bool = True)->None:
+def batch_mod_repo_policy_statement_arns(repo_filter: str, arns: list[str], statement_sid: str, replace: bool = False, dry_run: bool = True)->None:
   repos = get_repo_names(filter=repo_filter)
   for repo in repos:
     policy = get_repo_policy(repo)
