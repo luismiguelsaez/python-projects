@@ -1,27 +1,23 @@
 import ecr, sns, route53
 from json import dumps, loads
-import re
+
 
 if __name__ == "__main__":
 
   # Get ECR repository images
-  ecr.print_repo_images(repo_filter='lokalise-main/(static|app|nginx-app)', tag_filter="^[0-9]+$")
+  #ecr.print_repo_images(repo_filter='lokalise-main/(static|app|nginx-app)', tag_filter="^[0-9]+$")
 
   # Modify the ECR repository policy of all repos matching the filter
-  #repos = ecr.get_repo_names(filter='okapi-wrapper/.*')
-  #for repo in repos:
-  #  policy = ecr.get_repo_policy(repo)
-  #  modded_policy = ecr.mod_repo_policy_statement_arns(
-  #    policy=loads(policy),
-  #    statement_sid='AllowCrossAccountRO',
-  #    arns=[
-  #      "arn:aws:iam::632374391739:user/stage-lok-app-main",
-  #      "arn:aws:iam::046350321864:user/live-lok-app-main"
-  #    ],
-  #    replace=False
-  #  )
-  #  print(dumps(modded_policy, indent=2))
-  #  ecr.set_repo_policy(repo, dumps(modded_policy))
+  ecr.batch_mod_repo_policy_statement_arns(
+    repo_filter="okapi-wrapper/.*",
+    arns=[
+      "arn:aws:iam::632374391739:user/stage-lok-app-main",
+      "arn:aws:iam::046350321864:user/live-lok-app-main"
+    ],
+    statement_sid='AllowCrossAccountRO',
+    replace=False,
+    dry_run=True
+  )
 
   # Modify the ECR repository lifecycle policy of all repos matching the filter
   #repos = ecr.get_repo_names(filter='lokalise-main/.*')

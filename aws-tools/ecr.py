@@ -60,7 +60,26 @@ def print_repo_images(repo_filter: str = '.*', tag_filter: str = ".*")->None:
     if len(images) > 0:
       print(f"Repo: {repo}")
       for image in images:
-        print(f"  - ({images[image]['push_date']}) ({images[image]['size']}) {image} -> {images[image]['tags']}")
+        print("[{}] {:10.0f} {} {}".format(images[image]['push_date'], images[image]['size'], image, ",".join(images[image]['tags'])))
+
+def batch_mod_repo_policy_statement_arns(repo_filter: str, arns: list[str], statement_sid: str = 'AllowCrossAccountRO', replace: bool = False, dry_run: bool = True)->None:
+  repos = get_repo_names(filter=repo_filter)
+  for repo in repos:
+    policy = get_repo_policy(repo)
+    modded_policy = mod_repo_policy_statement_arns(
+      policy=loads(policy),
+      statement_sid=statement_sid,
+      arns=arns,
+      replace=replace
+    )
+    if dry_run:
+      print(f"-> Would have modified policy for {repo} to this\n")
+      print(dumps(modded_policy, indent=2))
+    else:
+      if set_repo_policy(repo, dumps(modded_policy)):
+        print(f"Successfully modified policy for {repo}")
+      else:
+        print(f"Failed to modify policy for {repo}: {dumps(modded_policy)}")
 
 def mod_repo_policy_statement_arns(policy: dict, statement_sid: str, arns: list[str], replace: bool = False)->dict:
   """
