@@ -51,6 +51,15 @@ def get_repo_image_tags(repo_name: str, filter: str = ".*")->dict[str, dict[str,
 
     return filtered_images
 
+def print_repo_images(repo_filter: str = '.*', tag_filter: str = ".*")->None:
+  repos = get_repo_names(filter=repo_filter)
+  for repo in repos:
+    images = get_repo_image_tags(repo, filter=tag_filter)
+    if len(images) > 0:
+      print(f"Repo: {repo}")
+      for image in images:
+        print(f"  - {image} ({images[image]['push_date']}) -> {images[image]['tags']}")
+
 def mod_repo_policy_statement_arns(policy: dict, statement_sid: str, arns: list[str], replace: bool = False)->dict:
   """
   This is a very specific use case where the ECR policy uses a `StringLike` condition to allow access to a specific set of ARNs
