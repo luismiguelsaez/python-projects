@@ -1,23 +1,31 @@
-import ecr, sns, route53
+import ecr, sns, route53, ec2
 from json import dumps, loads
 
 
 if __name__ == "__main__":
 
+  # Get AMI IDs
+  #amis = ec2.get_ami_id()
+  #print(dumps(amis, indent=2))
+  
   # Get ECR repository images
-  #ecr.print_repo_images(repo_filter='lokalise-main/(static|app|nginx-app)', tag_filter="^[0-9]+$")
+  ecr.print_repo_images(repo_filter='lokalise-main/(static|app|nginx-app)', tag_filter="^[0-9]+$")
+
+  # Get ECR repository config
+  #repo_config = ecr.get_repo_config(repo_name='lokalise-main/app')
+  #print(dumps(repo_config, indent=2))
 
   # Modify the ECR repository policy of all repos matching the filter
-  ecr.batch_mod_repo_policy_statement_arns(
-    repo_filter="okapi-wrapper/.*",
-    arns=[
-      "arn:aws:iam::632374391739:user/stage-lok-app-main",
-      "arn:aws:iam::046350321864:user/live-lok-app-main"
-    ],
-    statement_sid='AllowCrossAccountRO',
-    replace=False,
-    dry_run=True
-  )
+  #ecr.batch_mod_repo_policy_statement_arns(
+  #  repo_filter="okapi-wrapper/.*",
+  #  arns=[
+  #    "arn:aws:iam::632374391739:user/stage-lok-app-main",
+  #    "arn:aws:iam::046350321864:user/live-lok-app-main"
+  #  ],
+  #  statement_sid='AllowCrossAccountRO',
+  #  replace=False,
+  #  dry_run=True
+  #)
 
   # Modify the ECR repository lifecycle policy of all repos matching the filter
   #repos = ecr.get_repo_names(filter='lokalise-main/.*')

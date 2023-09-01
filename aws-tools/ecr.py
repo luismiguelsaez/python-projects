@@ -1,3 +1,4 @@
+import datetime
 import boto3
 import re
 from json import loads, dumps
@@ -29,6 +30,24 @@ def mod_lifecycle_policy(repo_name:str, policy:str)->bool:
       return False
     return True
 
+def get_repo_config(repo_name: str)->dict:
+    config = {}
+    config_lifecycle_policy = ecr_client.get_lifecycle_policy(repositoryName=repo_name)
+    
+    repos = ecr_client.describe_repositories()
+    filtered_repos = list(filter(lambda r: r['repositoryName'] == repo_name, repos['repositories']))
+    
+    for key in filtered_repos[0]:
+      if isinstance(filtered_repos[0][key], datetime.datetime):
+        date = filtered_repos[0][key].strftime("%Y-%m-%d %H:%M:%S")
+        config[key] = date
+      else:
+        config[key] = filtered_repos[0][key]
+
+    config['lifecyclePolicy'] = loads(config_lifecycle_policy['lifecyclePolicyText'])
+
+    return config
+
 def get_repo_images(repo_name: str, sort: bool = True)->list[dict]:
     images = ecr_client.describe_images(repositoryName=repo_name)
     if sort:
@@ -43,7 +62,7 @@ def get_repo_image_tags(repo_name: str, filter: str = ".*")->dict[str, dict[str,
         push_date = image['imagePushedAt'].strftime("%Y-%m-%d %H:%M:%S")
         digest = image['imageDigest']
         size = image['imageSizeInBytes']
-        filtered_tags = [ t for t in image['imageTags'] if re.match('^[0-9]+$', t) ]
+        filtered_tags = [ t for t in image['imageTags'] if re.match(filter, t) ]
         if len(filtered_tags) > 0:
           filtered_images[digest] = {
             'push_date': push_date,
