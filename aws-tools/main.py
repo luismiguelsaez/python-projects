@@ -5,18 +5,18 @@ from json import dumps, loads
 if __name__ == "__main__":
 
   # Get EBS volumes
-  volumes = ec2.delete_ebs_volumes_by_status(status='in-use')
-  for volume in volumes:
-    print(f"Volume: {volume['VolumeId']} ({volume['Size']}GB) -> {volume['State']}")
-    if volume['Attachments']:
-      print(f"  Attached to: {volume['Attachments'][0]['InstanceId']} ({volume['Attachments'][0]['Device']})")
+  #volumes = ec2.delete_ebs_volumes_by_status(status='in-use')
+  #for volume in volumes:
+  #  print(f"Volume: {volume['VolumeId']} ({volume['Size']}GB) -> {volume['State']}")
+  #  if volume['Attachments']:
+  #    print(f"  Attached to: {volume['Attachments'][0]['InstanceId']} ({volume['Attachments'][0]['Device']})")
 
   # Get AMI IDs
   #amis = ec2.get_ami_id()
   #print(dumps(amis, indent=2))
   
   # Get ECR repository images
-  #ecr.print_repo_images(repo_filter='lokalise-main/(static|app|nginx-app)', tag_filter="^[0-9]+$")
+  ecr.print_repo_images(repo_filter='tools/ci-env', tag_filter="^v[0-9]+.[0-9]+.*")
 
   # Get ECR repository config
   #repo_config = ecr.get_repo_config(repo_name='lokalise-main/app')
