@@ -9,5 +9,10 @@ app = FastAPI()
 # Create a path operation decorator
 @app.get("/") # Decorator
 async def root(response: Response):
+    return {"message": "Root path without cache control"}
+
+@app.get("/v2")
+async def v2_root(response: Response):
     response.headers["Cache-Control"] = "{}".format(CACHE_CONTROL)
-    return {"message": "Hello World"}
+    response.status_code = 403
+    return {"message": "Root path with cache control"}
